@@ -1,4 +1,4 @@
 Pyro-cms-front-user-management
 ==============================
 
-Module for user management in the frontend
+Work in progress. DO NOT USE IT YET
