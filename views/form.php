@@ -1,12 +1,16 @@
 <section>
     <div class="section-header">
-        
+        <?php if (validation_errors()): ?>
+            <div class="alert alert-danger">
+                <p><?php echo validation_errors(); ?></p>
+            </div>
+        <?php endif; ?>
     </div>
     <div class="section-body">
         <div class="row">
             <div class="col-lg-8">
                 <?php if ($this->method === 'create'): ?>
-                    <?php echo form_open_multipart(uri_string(), 'class="crud" class="form-horizontal" autocomplete="off"') ?>
+                    <?php echo form_open_multipart(uri_string(), 'class="form-horizontal crud" autocomplete="off"') ?>
                 <?php else: ?>
                     <?php echo form_open_multipart(uri_string(), 'class="crud form-horizontal"') ?>
                     <?php echo form_hidden('row_edit_id', isset($member->row_edit_id) ? $member->row_edit_id : $member->profile_id); ?>
@@ -24,7 +28,7 @@
                         <label for="username" class="control-label"><?php echo lang('user:username') ?> <span>*</span></label>
                     </div>
                     <div class="col-lg-10 col-md-10 col-sm-9">
-                        <?php echo form_input('username', $member->username, 'id="username" class="form-control" placeholder="Email"') ?>
+                        <?php echo form_input('username', $member->username, 'id="username" class="form-control" placeholder="Nombre de usuario"') ?>
                     </div>
                 </div>
                 <div class="form-group">
@@ -77,7 +81,8 @@
                         <?php echo form_password('password', '', 'id="password" autocomplete="off" class="form-control"') ?>
                     </div>
                 </div>
-                <div class="form-footer col-lg-offset-1 col-md-offset-2 col-sm-offset-3">
+                <div class="form-footer">
+                    <a href="<?php echo site_url('users_management')?>" class="btn btn-default">Regresar</a>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
                 <?php echo form_close(); ?>

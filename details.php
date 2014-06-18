@@ -27,12 +27,17 @@ class Module_users_management extends Module {
     }
 
     public function install() {
-        
+        $q = $this->db->where('name', 'site-admin-front')->get('groups');
+        if ($q->num_rows() == 0) {
+            $this->db->insert('groups', array(
+                'name' => 'site-admin-front',
+                'description' => 'Administrador de usuarios front'
+            ));
+        }
         return true;
     }
 
     public function uninstall() {
-        
         return true;
     }
 

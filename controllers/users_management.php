@@ -47,6 +47,9 @@ class users_management extends Public_Controller {
         )
     );
 
+    /**
+     * Class construct
+     */
     public function __construct() {
         parent::__construct();
         $this->lang->load('users_management');
@@ -55,7 +58,7 @@ class users_management extends Public_Controller {
         $this->load->model('groups/group_m');
         $this->load->helper('user');
         $this->load->library('form_validation');
-        $this->lang->load('user');
+        $this->lang->load('users/user');
 
         if ($this->current_user->group != 'admin') {
             $this->template->groups = $this->group_m->where_not_in('name', 'admin')->get_all();
@@ -67,13 +70,130 @@ class users_management extends Public_Controller {
         $this->template->append_js('module::users_management.js', null, 'modules');
     }
 
+    /**
+     * List the users
+     */
     public function index() {
         /** get users * */
-        $users = $this->user_m->get_all();
+        $skip_admin = ( $this->current_user->group != 'admin' ) ? 'admin' : '';
+        $base_where = array('active' => 0);
+        // Using this data, get the relevant results
+        $this->db->order_by('active', 'desc')
+                ->join('groups', 'groups.id = users.group_id')
+                ->where_not_in('groups.name', $skip_admin);
+        $users = $this->user_m->get_many_by($base_where);
         $this->template->set('users', $users);
         $this->template->build('main');
     }
 
+    /**
+     * Create a user
+     */
+    public function create() {
+        // Extra validation for basic data
+        $this->validation_rules['email']['rules'] .= '|callback__email_check';
+        $this->validation_rules['password']['rules'] .= '|required';
+        $this->validation_rules['username']['rules'] .= '|callback__username_check';
+
+        // Get the profile fields validation array from streams
+        $this->load->driver('Streams');
+        $profile_validation = $this->streams->streams->validation_array('profiles', 'users');
+
+        // Set the validation rules
+        $this->form_validation->set_rules(array_merge($this->validation_rules, $profile_validation));
+
+        $email = strtolower($this->input->post('email'));
+        $password = $this->input->post('password');
+        $username = $this->input->post('username');
+        $group_id = $this->input->post('group_id');
+        $activate = $this->input->post('active');
+
+        // keep non-admins from creating admin accounts. If they aren't an admin then force new one as a "user" account
+        $group_id = ($this->current_user->group !== 'admin' and $group_id == 1) ? 2 : $group_id;
+
+        // Get user profile data. This will be passed to our
+        // streams insert_entry data in the model.
+        $assignments = $this->streams->streams->get_assignments('profiles', 'users');
+        $profile_data = array();
+
+        foreach ($assignments as $assign) {
+            $profile_data[$assign->field_slug] = $this->input->post($assign->field_slug);
+        }
+
+        // Some stream fields need $_POST as well.
+        $profile_data = array_merge($profile_data, $_POST);
+
+        $profile_data['display_name'] = $this->input->post('display_name');
+
+        if ($this->form_validation->run() !== false) {
+            if ($activate === '2') {
+                // we're sending an activation email regardless of settings
+                Settings::temp('activation_email', true);
+            } else {
+                // we're either not activating or we're activating instantly without an email
+                Settings::temp('activation_email', false);
+            }
+
+            $group = $this->group_m->get($group_id);
+
+            // Register the user (they are activated by default if an activation email isn't requested)
+            if ($user_id = $this->ion_auth->register($username, $password, $email, $group_id, $profile_data, $group->name)) {
+                if ($activate === '0') {
+                    // admin selected Inactive
+                    $this->ion_auth_model->deactivate($user_id);
+                }
+
+                // Fire an event. A new user has been created. 
+                Events::trigger('user_created', $user_id);
+
+                // Set the flashdata message and redirect
+                $this->session->set_flashdata('success', $this->ion_auth->messages());
+
+                // Redirect back to the form or main page
+                $this->input->post('btnAction') === 'save_exit' ? redirect('users_management') : redirect('users_management/edit/' . $user_id);
+            }
+            // Error
+            else {
+                $this->session->set_flashdata('error', $this->ion_auth->errors());
+                $this->template->error_string = $this->ion_auth->errors();
+            }
+        } else {
+            // Dirty hack that fixes the issue of having to
+            // re-add all data upon an error
+            if ($_POST) {
+                $member = (object) $_POST;
+            }
+        }
+
+        if (!isset($member)) {
+            $member = new stdClass();
+        }
+
+        // Loop through each validation rule
+        foreach ($this->validation_rules as $rule) {
+            $member->{$rule['field']} = set_value($rule['field']);
+        }
+
+        $stream_fields = $this->streams_m->get_stream_fields($this->streams_m->get_stream_id_from_slug('profiles', 'users'));
+
+        // Set Values
+        $values = $this->fields->set_values($stream_fields, null, 'new');
+
+        // Run stream field events
+        $this->fields->run_field_events($stream_fields, array(), $values);
+
+        $this->template
+                ->title($this->module_details['name'], lang('user:add_title'))
+                ->set('member', $member)
+                ->set('display_name', set_value('display_name', $this->input->post('display_name')))
+                ->set('profile_fields', $this->streams->fields->get_stream_fields('profiles', 'users', $values))
+                ->build('form');
+    }
+
+    /**
+     * Edit a user
+     * @param type $id
+     */
     public function edit($id) {
         if (empty($id)) {
             show_404();
@@ -172,6 +292,48 @@ class users_management extends Public_Controller {
                 ->set('profile_fields', $this->streams->fields->get_stream_fields('profiles', 'users', $values, $profile_id))
                 ->set('member', $member)
                 ->build('form');
+    }
+
+    /**
+     * Delete an existing user
+     *
+     * @param int $id The ID of the user to delete
+     */
+    public function delete($id = 0) {
+
+        $ids = ($id > 0) ? array($id) : $this->input->post('action_to');
+
+        if (!empty($ids)) {
+            $deleted = 0;
+            $to_delete = 0;
+            $deleted_ids = array();
+            foreach ($ids as $id) {
+                // Make sure the admin is not trying to delete themself
+                if ($this->ion_auth->get_user()->id == $id) {
+                    $this->session->set_flashdata('notice', lang('user:delete_self_error'));
+                    continue;
+                }
+
+                if ($this->ion_auth->delete_user($id)) {
+                    $deleted_ids[] = $id;
+                    $deleted++;
+                }
+                $to_delete++;
+            }
+
+            if ($to_delete > 0) {
+                // Fire an event. One or more users have been deleted. 
+                Events::trigger('user_deleted', $deleted_ids);
+
+                $this->session->set_flashdata('success', sprintf(lang('user:mass_delete_success'), $deleted, $to_delete));
+            }
+        }
+        // The array of id's to delete is empty
+        else {
+            $this->session->set_flashdata('error', lang('user:mass_delete_error'));
+        }
+
+        redirect('users_management');
     }
 
     /**

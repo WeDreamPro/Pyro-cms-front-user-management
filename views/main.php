@@ -1,6 +1,7 @@
 <section>
     <div class="section-header">
         <?php echo lang('users_management:title') ?>
+        <a href="<?php echo site_url('users_management/create') ?>" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Crear Usuario</a>
     </div>
     <div class="section-body">
         <div class="row">
@@ -38,3 +39,21 @@
         </div>
     </div>
 </section>
+<!-- Modal -->
+<div class="modal fade" id="DeleteUser" tabindex="-1" role="dialog" aria-labelledby="Eliminar Usuario" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title" id="myModalLabel">Eliminar Usuario</h4>
+      </div>
+      <div class="modal-body">
+          Esta seguro que desea eliminar este usuario?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancelar</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteUser" data-url="0" data-loafing-text="Cargando">Eliminar</button>
+      </div>
+    </div>
+  </div>
+</div>
