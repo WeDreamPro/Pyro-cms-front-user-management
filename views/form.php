@@ -54,23 +54,25 @@
                     </div>
                 <?php endforeach ?>
                 <hr>
-                <div class="form-group">
-                    <div class="col-lg-2 col-md-2 col-sm-3">
-                        <label for="group_id" class="control-label"><?php echo lang('user:group_label') ?> <span>*</span></label>
+                <?php if ($this->current_user->group == "admin" || $this->current_user->group == "site-admin-front"): ?>
+                    <div class="form-group">
+                        <div class="col-lg-2 col-md-2 col-sm-3">
+                            <label for="group_id" class="control-label"><?php echo lang('user:group_label') ?> <span>*</span></label>
+                        </div>
+                        <div class="col-lg-10 col-md-10 col-sm-9">
+                            <?php echo form_dropdown('group_id', array(0 => lang('global:select-pick')) + $groups_select, $member->group_id, 'id="group_id" class="form-control"') ?>
+                        </div>
                     </div>
-                    <div class="col-lg-10 col-md-10 col-sm-9">
-                        <?php echo form_dropdown('group_id', array(0 => lang('global:select-pick')) + $groups_select, $member->group_id, 'id="group_id" class="form-control"') ?>
+                    <div class="form-group">
+                        <div class="col-lg-2 col-md-2 col-sm-3">
+                            <label for="active" class="control-label"><?php echo lang('user:activate_label') ?> <span>*</span></label>
+                        </div>
+                        <div class="col-lg-10 col-md-10 col-sm-9">
+                            <?php $options = array(0 => lang('user:do_not_activate'), 1 => lang('user:active'), 2 => lang('user:send_activation_email')) ?>
+                            <?php echo form_dropdown('active', $options, $member->active, 'id="active" class="form-control"') ?>
+                        </div>
                     </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-lg-2 col-md-2 col-sm-3">
-                        <label for="active" class="control-label"><?php echo lang('user:activate_label') ?> <span>*</span></label>
-                    </div>
-                    <div class="col-lg-10 col-md-10 col-sm-9">
-                        <?php $options = array(0 => lang('user:do_not_activate'), 1 => lang('user:active'), 2 => lang('user:send_activation_email')) ?>
-                        <?php echo form_dropdown('active', $options, $member->active, 'id="active" class="form-control"') ?>
-                    </div>
-                </div>
+                <?php endif; ?>
                 <div class="form-group">
                     <div class="col-lg-2 col-md-2 col-sm-3">
                         <label for="password" class="control-label"><?php echo lang('global:password') ?> 
@@ -82,7 +84,7 @@
                     </div>
                 </div>
                 <div class="form-footer">
-                    <a href="<?php echo site_url('users_management')?>" class="btn btn-default">Regresar</a>
+                    <a href="<?php echo site_url('users_management') ?>" class="btn btn-default">Regresar</a>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
                 <?php echo form_close(); ?>
