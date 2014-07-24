@@ -1,12 +1,12 @@
-<section>
-    <div class="section-header">
+<section class="panel">
+    <div class="panel-header">
         <?php if (validation_errors()): ?>
             <div class="alert alert-danger">
                 <p><?php echo validation_errors(); ?></p>
             </div>
         <?php endif; ?>
     </div>
-    <div class="section-body">
+    <div class="panel-body">
         <div class="row">
             <div class="col-lg-8">
                 <?php if ($this->method === 'create'): ?>
