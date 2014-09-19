@@ -216,6 +216,13 @@ class users_management extends Public_Controller {
         if ($member->email != $this->input->post('email')) {
             $this->validation_rules['email']['rules'] .= '|callback__email_check';
         }
+        if ($this->current_user->group === 'admin' || $this->current_user->group == "site-admin-front") {
+            array_push($this->validation_rules, array(
+                'field' => 'group_id',
+                'label' => 'lang:user_group_label',
+                'rules' => 'required|callback__group_check'
+            ));
+        }
         // Get the profile fields validation array from streams
         $this->load->driver('Streams');
         $profile_validation = $this->streams->streams->validation_array('profiles', 'users', 'edit', array(), $id);
@@ -238,7 +245,11 @@ class users_management extends Public_Controller {
             $update_data['active'] = $this->input->post('active');
             $update_data['username'] = $this->input->post('username');
             // allow them to update their one group but keep users with user editing privileges from escalating their accounts to admin
-            $update_data['group_id'] = ($this->current_user->group !== 'admin' and $this->input->post('group_id') == 1) ? $member->group_id : $this->input->post('group_id');
+            if($this->current_user->group === 'admin' || $this->current_user->group == "site-admin-front"){
+                $update_data['group_id'] = ($this->current_user->group !== 'admin' and $this->input->post('group_id') == 1) ? $member->group_id : $this->input->post('group_id');
+            }else{
+                $update_data['group_id'] = $member->group_id;
+            }
             if ($update_data['active'] === '2') {
                 $this->ion_auth->activation_email($id);
                 unset($update_data['active']);

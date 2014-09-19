@@ -72,6 +72,8 @@
                             <?php echo form_dropdown('active', $options, $member->active, 'id="active" class="form-control"') ?>
                         </div>
                     </div>
+                <?php else: ?>
+                    <input type="hidden" name="active" value="1" />
                 <?php endif; ?>
                 <div class="form-group">
                     <div class="col-lg-2 col-md-2 col-sm-3">
