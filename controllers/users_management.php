@@ -31,11 +31,6 @@ class users_management extends Public_Controller {
             'rules' => 'required|alpha_dot_dash|min_length[3]|max_length[20]'
         ),
         array(
-            'field' => 'group_id',
-            'label' => 'lang:user_group_label',
-            'rules' => 'required|callback__group_check'
-        ),
-        array(
             'field' => 'active',
             'label' => 'lang:user_active_label',
             'rules' => ''
@@ -94,7 +89,14 @@ class users_management extends Public_Controller {
         $this->validation_rules['email']['rules'] .= '|callback__email_check';
         $this->validation_rules['password']['rules'] .= '|required';
         $this->validation_rules['username']['rules'] .= '|callback__username_check';
-
+        /** if admin add validation for group Id * */
+        if ($this->current_user->group === 'admin' || $this->current_user->group == "site-admin-front") {
+            array_push($this->validation_rules, array(
+                'field' => 'group_id',
+                'label' => 'lang:user_group_label',
+                'rules' => 'required|callback__group_check'
+            ));
+        }
         // Get the profile fields validation array from streams
         $this->load->driver('Streams');
         $profile_validation = $this->streams->streams->validation_array('profiles', 'users');
@@ -105,7 +107,11 @@ class users_management extends Public_Controller {
         $email = strtolower($this->input->post('email'));
         $password = $this->input->post('password');
         $username = $this->input->post('username');
-        $group_id = $this->input->post('group_id');
+        if ($this->input->post('group_id')) {
+            $group_id = $this->input->post('group_id');
+        } else {
+            $group_id = 2;
+        }
         $activate = $this->input->post('active');
 
         // keep non-admins from creating admin accounts. If they aren't an admin then force new one as a "user" account
