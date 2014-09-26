@@ -41,17 +41,33 @@
                 </div>
                 <hr>
                 <?php foreach ($profile_fields as $field): ?>
-                    <div class="form-group">
-                        <div class="col-lg-2 col-md-2 col-sm-3">
-                            <label for="<?php echo $field['field_slug'] ?>">
-                                <?php echo (lang($field['field_name'])) ? lang($field['field_name']) : $field['field_name']; ?>
-                                <?php if ($field['required']) { ?> <span>*</span><?php } ?>
-                            </label>
+                    <?php if ($this->current_user->group === "admin" || $this->current_user->group === "site-admin-front"): ?>
+                        <div class="form-group">
+                            <div class="col-lg-2 col-md-2 col-sm-3">
+                                <label for="<?php echo $field['field_slug'] ?>">
+                                    <?php echo (lang($field['field_name'])) ? lang($field['field_name']) : $field['field_name']; ?>
+                                    <?php if ($field['required']) { ?> <span>*</span><?php } ?>
+                                </label>
+                            </div>
+                            <div class="col-lg-10 col-md-10 col-sm-9">
+                                <?php echo $field['input'] ?>
+                            </div>
                         </div>
-                        <div class="col-lg-10 col-md-10 col-sm-9">
-                            <?php echo $field['input'] ?>
-                        </div>
-                    </div>
+                    <?php else: ?>
+                        <?php if ($field['field_slug'] !== "grupos_de_rds"): ?>
+                            <div class="form-group">
+                                <div class="col-lg-2 col-md-2 col-sm-3">
+                                    <label for="<?php echo $field['field_slug'] ?>">
+                                        <?php echo (lang($field['field_name'])) ? lang($field['field_name']) : $field['field_name']; ?>
+                                        <?php if ($field['required']) { ?> <span>*</span><?php } ?>
+                                    </label>
+                                </div>
+                                <div class="col-lg-10 col-md-10 col-sm-9">
+                                    <?php echo $field['input'] ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+                    <?php endif; ?>
                 <?php endforeach ?>
                 <hr>
                 <?php if ($this->current_user->group == "admin" || $this->current_user->group == "site-admin-front"): ?>
