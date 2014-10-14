@@ -110,7 +110,7 @@
             <div class="col-lg-4">
                 <div class="alert alert-info">
                     <h2><i class="fa fa-warning"></i> Importante!</h2>
-                    <p>Por favor ingrese todos los datos del formulario <?php echo $this->current_user->group ?></p>
+                    <p>Por favor ingrese todos los datos del formulario</p>
                 </div>
             </div>
         </div>
