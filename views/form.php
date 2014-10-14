@@ -41,6 +41,7 @@
                 </div>
                 <hr>
                 <?php foreach ($profile_fields as $field): ?>
+                <?php var_dump($this->current_user->group);die;?>
                     <?php if ($this->current_user->group == "admin" || $this->current_user->group == "site-admin-front"): ?>
                         <div class="form-group">
                             <div class="col-lg-2 col-md-2 col-sm-3">
