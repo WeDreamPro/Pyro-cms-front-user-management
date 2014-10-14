@@ -9,7 +9,6 @@
     <div class="panel-body">
         <div class="row">
             <div class="col-lg-8">
-                <?php var_dump($this->current_user->group);die;?>
                 <?php if ($this->method === 'create'): ?>
                     <?php echo form_open_multipart(uri_string(), 'class="form-horizontal crud" autocomplete="off"') ?>
                 <?php else: ?>
