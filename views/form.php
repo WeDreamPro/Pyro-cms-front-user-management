@@ -111,6 +111,7 @@
                 <div class="alert alert-info">
                     <h2><i class="fa fa-warning"></i> Importante!</h2>
                     <p>Por favor ingrese todos los datos del formulario</p>
+                    <?php var_dump($this->current_user->group);?>
                 </div>
             </div>
         </div>
