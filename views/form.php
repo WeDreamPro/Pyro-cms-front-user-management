@@ -54,7 +54,7 @@
                             </div>
                         </div>
                     <?php else: ?>
-                        <?php if ($field['field_slug'] !== "grupos_de_rds"): ?>
+                        <?php if ($field['field_slug'] != "grupos_de_rds"): ?>
                             <div class="form-group">
                                 <div class="col-lg-2 col-md-2 col-sm-3">
                                     <label for="<?php echo $field['field_slug'] ?>">
@@ -111,7 +111,6 @@
                 <div class="alert alert-info">
                     <h2><i class="fa fa-warning"></i> Importante!</h2>
                     <p>Por favor ingrese todos los datos del formulario</p>
-                    <?php var_dump($this->current_user->group);?>
                 </div>
             </div>
         </div>
