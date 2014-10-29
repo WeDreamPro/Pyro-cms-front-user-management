@@ -46,6 +46,7 @@ class users_management extends Public_Controller {
      * Class construct
      */
     public function __construct() {
+        ci()->secure = true;
         parent::__construct();
         $this->lang->load('users_management');
         $this->load->model('users/user_m');
