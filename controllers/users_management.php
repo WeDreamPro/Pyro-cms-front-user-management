@@ -70,6 +70,9 @@ class users_management extends Public_Controller {
      * List the users
      */
     public function index() {
+        if($this->current_user->group != "admin" && $this->current_user->group != "site-admin-front"){
+            show_error('No tienes permiso para esto!');
+        }
         /** get users * */
         $skip_admin = ( $this->current_user->group != 'admin' ) ? 'admin' : '';
         $base_where = array('active' => 0);

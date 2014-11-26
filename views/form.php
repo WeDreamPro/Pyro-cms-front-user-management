@@ -102,7 +102,6 @@
                     </div>
                 </div>
                 <div class="form-footer">
-                    <a href="<?php echo site_url('users_management') ?>" class="btn btn-default">Regresar</a>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
                 <?php echo form_close(); ?>
