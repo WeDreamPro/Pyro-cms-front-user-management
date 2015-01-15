@@ -2,7 +2,7 @@
     <div class="panel-heading">
         <?php echo lang('users_management:title') ?>
       
-        <a href="<?php echo site_url('users_management/create') ?>" class="btn btn-primary pull-right"><i class="fa fa-plus"></i> Crear Usuario</a>
+        <a href="<?php echo site_url('users_management/create') ?>" class="btn btn-primary pull-right"><i class="fa fa-plus"></i>Crear Usuario</a>
     </div>
     <div class="panel-body">
         <div class="row">
