@@ -16,8 +16,8 @@
                     <?php echo form_hidden('row_edit_id', isset($member->row_edit_id) ? $member->row_edit_id : $member->profile_id); ?>
                 <?php endif ?>
                 <div class="form-group">
-                    <div class="col-lg-2 col-md-2 col-sm-3">
-                        <label for="email" class="control-label"><?php echo lang('global:email') ?> <span>*</span></label>
+                    <div class="col-lg-2 col-md-2 col-sm-3  ">
+                        <label for="email" class="control-label "><?php echo lang('global:email') ?> <span>*</span></label>
                     </div>
                     <div class="col-lg-10 col-md-10 col-sm-9">
                         <?php echo form_input('email', $member->email, 'id="email" class="form-control" placeholder="Email"') ?>
