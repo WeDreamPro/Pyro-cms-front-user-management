@@ -15,21 +15,21 @@ class Menu_Users_management {
                         'link' => '#',
                         'text' => '<i class="fa fa-fw fa-user"></i> Usuarios',
                     ],
-                    'permissions' => ['_forms'],
+                    'permissions' => ['_EditarPerfiles'],
                     'submenus' => [
                         'Admin' => [
                             'link' => [
                                 'link' => "#",
                                 'text' => 'Administrador',
                             ],
-                            'permissions' => ['_forms'],
+                            'permissions' => ['_EditarPerfiles'],
                             'submenus' => [
                                 'AdminUsers' => [
                                     'link' => [
                                         'link' => site_url('users_management'),
                                         'text' => 'Administrar Usuarios',
                                     ],
-                                    'permissions' => ['_admin', '_adminUsers']
+                                    'permissions' => ['_EditarPerfiles']
                                 ]
                             ]
                         ]
@@ -42,7 +42,7 @@ class Menu_Users_management {
                         'link' => site_url('me/edit'),
                         'text' => '<i class="fa fa-fw fa-user"></i> Editar Perfil'
                     ],
-                    'permissions' => ['_self']
+                    'permissions' => ['_EditarPerfilPropio']
                 ]
             ]
         ];

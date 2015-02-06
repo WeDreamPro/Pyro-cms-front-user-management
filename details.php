@@ -9,7 +9,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
  */
 class Module_users_management extends Module {
 
-    public $version = '1.0.0';
+    public $version = '1.1.0';
 
     public function info() {
         return array(
@@ -42,7 +42,37 @@ class Module_users_management extends Module {
     }
 
     public function upgrade($old_version) {
+        if($old_version === "1.0.0"){
+            $this->installPermissions();
+        }
         return true;
+    }
+    
+    public function installPermissions(){
+        $app = Rds\Csd\App::get();
+        $permissions = [
+            'UsersM' => [
+                'name' => 'Editar perfiles',
+                'description' => 'Capacidad para cambiar perfiles de usuarios',
+                'module' => 'user_management',
+                'assign' => [
+                    'groups' => [
+                        1, 3
+                    ]
+                ]
+            ],
+            'UsersP' => [
+                'name' => 'Editar perfil propio',
+                'description' => 'Capacidad para cambiar su propio perfil',
+                'module' => 'user_management',
+                'assign' => [
+                    'groups' => [
+                        1, 2, 3, 4
+                    ]
+                ]
+            ]
+        ];
+        return $app->acl->installPermissions($permissions);
     }
 
 }
