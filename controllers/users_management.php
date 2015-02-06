@@ -70,6 +70,7 @@ class users_management extends Public_Controller {
      * List the users
      */
     public function index() {
+        $this->app->menu->setActiveMenu('sidebar.Users.Admin.AdminUsers');
         if($this->current_user->group != "admin" && $this->current_user->group != "site-admin-front"){
             show_error('No tienes permiso para esto!');
         }
